@@ -4,24 +4,56 @@ import logo from "../../assets/logo.svg";
 import { Layout, Typography, Input, Menu, Button, Dropdown } from "antd";
 import { GlobalOutlined } from "@ant-design/icons";
 import {withRouter, RouteComponentProps} from "react-router-dom";
-import store from "../../redux/store"
-import { ILanguageState} from "../../redux/language/languageReducer"
+import store, {IRootState} from "../../redux/store"
 import {changeLanguageActionCreator, addLanguageActionCreator} from "../../redux/language/languageAction"
 import {withTranslation, WithTranslation} from "react-i18next"
 
-interface IState extends ILanguageState{
+import {connect} from "react-redux"
+import {Dispatch} from "redux"
 
+import axios from "axios"
+
+const mapStateToProps = (state: IRootState)=>{
+  return {
+    language: state.language,
+    languageList: state.languageList
+  }
 }
 
-class HeaderComponent extends Component<RouteComponentProps & WithTranslation, IState> {
+const mapDispatchToProps = (dispatch: Dispatch)=>{
+  return {
+    changeLanguage: (code:"zh"|"en")=>{
+      const action = changeLanguageActionCreator(code)
+      dispatch(action)
+    },
+    addLanguage:(name:string, code:string)=>{
+      const action = addLanguageActionCreator(name,code)
+      dispatch(action)
+    }
+  }
+}
+
+type TPropsType = RouteComponentProps & //react-router路由props类型
+  WithTranslation & // i18n props类型
+  ReturnType<typeof mapStateToProps> & // redux store映射类型
+  ReturnType<typeof mapDispatchToProps>
+
+
+class HeaderComponent extends Component<TPropsType> {
+
   constructor(props){
     super(props)
-    const storeState = store.getState();
     this.state = {
-      language: storeState.language,
-      languageList: storeState.languageList
+      productList:[]
     }
-    store.subscribe(this.subscribeStoreState)
+  }
+
+  async componentDidMount(){
+    const {data} = await axios.get("https://www.fastmock.site/mock/f8254e0cd181e425348068a8db1a8725/api/productCollections")
+    this.setState({
+      productList: data.data
+    })
+
   }
 
   subscribeStoreState=()=>{
@@ -34,11 +66,9 @@ class HeaderComponent extends Component<RouteComponentProps & WithTranslation, I
 
   menuClickHandler=(e)=>{
     if(e.key==="new"){
-      const action = addLanguageActionCreator("新语言","new_lang")
-      store.dispatch(action)
+      this.props.addLanguage("新语言","new_lang")
     }else{
-      const action = changeLanguageActionCreator(e.key)
-      store.dispatch(action)
+      this.props.changeLanguage(e.key)
     }
    
   }
@@ -58,7 +88,7 @@ class HeaderComponent extends Component<RouteComponentProps & WithTranslation, I
               overlay={
                 <Menu onClick={this.menuClickHandler}>
                   {
-                    this.state.languageList.map(l=><Menu.Item key={l.code}>{l.name}</Menu.Item>)
+                    this.props.languageList.map(l=><Menu.Item key={l.code}>{l.name}</Menu.Item>)
                   }
                   <Menu.Item key={"new"}>+{t("header.slogan")}</Menu.Item>
                 </Menu>
@@ -66,7 +96,7 @@ class HeaderComponent extends Component<RouteComponentProps & WithTranslation, I
               icon={<GlobalOutlined />}
               
             >
-              {this.state.language === "zh" ? "中文" : "English"}
+              {this.props.language === "zh" ? "中文" : "English"}
             </Dropdown.Button>
             <Button.Group className={styles["button-group"]}>
               <Button onClick={()=>history.push("/register")}>{t("header.signin")}</Button>
@@ -109,4 +139,4 @@ class HeaderComponent extends Component<RouteComponentProps & WithTranslation, I
   }
 };
 
-export const Header =  withTranslation()(withRouter(HeaderComponent))
+export const Header =  connect(mapStateToProps, mapDispatchToProps)(withTranslation()(withRouter(HeaderComponent)))
