@@ -285,5 +285,3 @@ export const productList3 = [
     ],
   },
 ];
-
-export const productLists = [productList1, productList2, productList3]

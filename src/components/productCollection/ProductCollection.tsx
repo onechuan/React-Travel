@@ -1,25 +1,26 @@
-import React from "react"
-import {Divider, Row, Col} from "antd"
-import styles from  "./ProductionCollection.module.css"
-import {ProductionImage} from "./ProdcutionImage"
+import React from "react";
+import styles from "./ProductCollection.module.css";
+import { Row, Col, Typography, Divider } from "antd";
+import { ProductImage } from "./ProductImage";
 
-interface IPropsType {
-  title: JSX.Element;
-  sideImage: string;
-  products: any[];
+interface PropsType {
+    title: JSX.Element;
+    sideImage: string;
+    products: any[];
 }
 
-export const ProductionCollection: React.FC<IPropsType> = ({title, sideImage, products})=>{
-  return <div className={styles.content}>
-    <Divider orientation="left">{title}</Divider>
-    <Row>
-      <Col span={4}>
-        <img src={sideImage} className={styles["side-image"]} alt="" />
-      </Col>
-      <Col span={20}>
+export const ProductCollection: React.FC<PropsType> = ({title, sideImage, products}) => {
+    return (
+      <div className={styles.content}>
+        <Divider orientation="left">{title}</Divider>
+        <Row>
+          <Col span={4}>
+            <img src={sideImage} className={styles["side-image"]} alt="" />
+          </Col>
+          <Col span={20}>
             <Row>
               <Col span={12}>
-                <ProductionImage
+                <ProductImage
                   id={products[0].id}
                   size={"large"}
                   title={products[0].title}
@@ -30,7 +31,7 @@ export const ProductionCollection: React.FC<IPropsType> = ({title, sideImage, pr
               <Col span={12}>
                 <Row>
                   <Col span={12}>
-                    <ProductionImage
+                    <ProductImage
                       id={products[1].id}
                       size="small"
                       title={products[1].title}
@@ -39,7 +40,7 @@ export const ProductionCollection: React.FC<IPropsType> = ({title, sideImage, pr
                     />
                   </Col>
                   <Col span={12}>
-                    <ProductionImage
+                    <ProductImage
                       id={products[2].id}
                       size="small"
                       title={products[2].title}
@@ -50,7 +51,7 @@ export const ProductionCollection: React.FC<IPropsType> = ({title, sideImage, pr
                 </Row>
                 <Row>
                   <Col span={12}>
-                    <ProductionImage
+                    <ProductImage
                       id={products[3].id}
                       size="small"
                       title={products[3].title}
@@ -59,7 +60,7 @@ export const ProductionCollection: React.FC<IPropsType> = ({title, sideImage, pr
                     />
                   </Col>
                   <Col span={12}>
-                    <ProductionImage
+                    <ProductImage
                       id={products[4].id}
                       size="small"
                       title={products[4].title}
@@ -72,7 +73,7 @@ export const ProductionCollection: React.FC<IPropsType> = ({title, sideImage, pr
             </Row>
             <Row>
               <Col span={6}>
-                <ProductionImage
+                <ProductImage
                   id={products[5].id}
                   size="small"
                   title={products[5].title}
@@ -81,7 +82,7 @@ export const ProductionCollection: React.FC<IPropsType> = ({title, sideImage, pr
                 />
               </Col>
               <Col span={6}>
-                <ProductionImage
+                <ProductImage
                   id={products[6].id}
                   size="small"
                   title={products[6].title}
@@ -90,7 +91,7 @@ export const ProductionCollection: React.FC<IPropsType> = ({title, sideImage, pr
                 />
               </Col>
               <Col span={6}>
-                <ProductionImage
+                <ProductImage
                   id={products[7].id}
                   size="small"
                   title={products[7].title}
@@ -99,7 +100,7 @@ export const ProductionCollection: React.FC<IPropsType> = ({title, sideImage, pr
                 />
               </Col>
               <Col span={6}>
-                <ProductionImage
+                <ProductImage
                   id={products[8].id}
                   size="small"
                   title={products[8].title}
@@ -109,6 +110,7 @@ export const ProductionCollection: React.FC<IPropsType> = ({title, sideImage, pr
               </Col>
             </Row>
           </Col>
-    </Row>
-  </div>
+        </Row>
+      </div>
+    );
 }
