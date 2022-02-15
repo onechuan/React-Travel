@@ -1,7 +1,7 @@
 import React,{Component} from "react";
 import styles from "./Header.module.css";
 import logo from "../../assets/logo.svg";
-import { Layout, Typography, Input, Menu, Button, Dropdown } from "antd";
+import { Layout, Typography, Input, Menu, Button, Dropdown, Spin } from "antd";
 import { GlobalOutlined } from "@ant-design/icons";
 import {withRouter, RouteComponentProps} from "react-router-dom";
 import store, {IRootState} from "../../redux/store"
@@ -12,23 +12,26 @@ import {connect} from "react-redux"
 import {Dispatch} from "redux"
 
 import axios from "axios"
+import { getDataActionCreator } from "../../redux/recommend/recommendAction";
+
+interface IState {
+  loading: boolean,
+  error: string | null,
+  productList:any[]
+}
 
 const mapStateToProps = (state: IRootState)=>{
   return {
-    language: state.language,
-    languageList: state.languageList
+    loading: state.recommendReducer.loading,
+    error: state.recommendReducer.error,
+    productList: state.recommendReducer.productList
   }
 }
 
-const mapDispatchToProps = (dispatch: Dispatch)=>{
+const mapDispatchToProps = (dispatch)=>{
   return {
-    changeLanguage: (code:"zh"|"en")=>{
-      const action = changeLanguageActionCreator(code)
-      dispatch(action)
-    },
-    addLanguage:(name:string, code:string)=>{
-      const action = addLanguageActionCreator(name,code)
-      dispatch(action)
+    getData:()=>{
+      dispatch(getDataActionCreator())
     }
   }
 }
@@ -41,63 +44,69 @@ type TPropsType = RouteComponentProps & //react-router路由props类型
 
 class HeaderComponent extends Component<TPropsType> {
 
-  constructor(props){
-    super(props)
-    this.state = {
-      productList:[]
-    }
+  componentDidMount(){
+    this.props.getData()
   }
 
-  async componentDidMount(){
-    const {data} = await axios.get("https://www.fastmock.site/mock/f8254e0cd181e425348068a8db1a8725/api/productCollections")
-    this.setState({
-      productList: data.data
-    })
+  // subscribeStoreState=()=>{
+  //   const newStoreState = store.getState()
+  //     this.setState({
+  //       language: newStoreState.languageReducer.language,
+  //       languageList: newStoreState.languageReducer.languageList
+  //     })
+  // }
 
-  }
-
-  subscribeStoreState=()=>{
-    const newStoreState = store.getState()
-      this.setState({
-        language: newStoreState.language,
-        languageList: newStoreState.languageList
-      })
-  }
-
-  menuClickHandler=(e)=>{
-    if(e.key==="new"){
-      this.props.addLanguage("新语言","new_lang")
-    }else{
-      this.props.changeLanguage(e.key)
-    }
+  // menuClickHandler=(e)=>{
+  //   if(e.key==="new"){
+  //     this.props.addLanguage("新语言","new_lang")
+  //   }else{
+  //     this.props.changeLanguage(e.key)
+  //   }
    
-  }
+  // }
 
 
   render(){
-    const {t} = this.props
-    const {history} = this.props
+    const {t,history,loading,error,productList} = this.props
+    // const {loading,error} = this.state
+    // if(loading){
+    //   return <Spin  
+    //     size="large" 
+    //     style={{
+    //       marginTop:200,
+    //       marginRight:"auto",
+    //       marginBottom:200,
+    //       marginLeft:"auto",
+    //       width:"100%"
+    //     }}
+    //   />
+    // }
+    // if(error){
+    //   return <div>报错信息:{error.msg}</div>
+    // }
     return (
-      <div className={styles["app-header"]}>
+      <>
+        
+        <div className={styles["app-header"]}>
         {/* top-header */}
         <div className={styles["top-header"]}>
           <div className={styles.inner}>
             <Typography.Text>{t("header.slogan")}</Typography.Text>
-            <Dropdown.Button
+            {/* <Dropdown.Button
               style={{ marginLeft: 15 }}
               overlay={
-                <Menu onClick={this.menuClickHandler}>
-                  {
+                <Menu onClick={this.menuClickHandler}> */}
+                  {/* {
                     this.props.languageList.map(l=><Menu.Item key={l.code}>{l.name}</Menu.Item>)
-                  }
-                  <Menu.Item key={"new"}>+{t("header.slogan")}</Menu.Item>
+                  } */}
+                  {/* <Menu.Item key={"new"}>+{t("header.slogan")}</Menu.Item>
                 </Menu>
               }
               icon={<GlobalOutlined />}
               
-            >
-              {this.props.language === "zh" ? "中文" : "English"}
-            </Dropdown.Button>
+            > */}
+              {/* {this.props.language === "zh" ? "中文" : "English"} */}
+            {/* </Dropdown.Button> */}
             <Button.Group className={styles["button-group"]}>
               <Button onClick={()=>history.push("/register")}>{t("header.signin")}</Button>
               <Button onClick={()=>history.push("/signIn")}>{t("header.register")}</Button>
@@ -134,7 +143,8 @@ class HeaderComponent extends Component<TPropsType> {
           <Menu.Item key="15"> {t("header.outdoor")} </Menu.Item>
           <Menu.Item key="16"> {t("header.insurance")} </Menu.Item>
         </Menu>
-      </div>
+        </div>
+      </>
     );
   }
 };
